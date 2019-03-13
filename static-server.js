@@ -10,7 +10,7 @@ const url  = require('url');
 // 定义Expires规则
 const Expires = {
   fileMatch: /(gif|png|jpg|jpeg|js|css)$/ig,
-  maxAge: 60 * 60 * 24 * 365
+  maxAge: 60
 };
 const hasTrailingSlash = url => url[url.length - 1] === '/';
 
@@ -59,7 +59,8 @@ class StaticServer {
           res.setHeader("Etag", hash);
 
           // 正常写文件
-          res.writeHead(200, {"Content-Type": mime.lookup(pathName) })
+          res.writeHead(200, {"Content-Type": mime.lookup(pathName) });
+          console.log('写文件'+req.url);
           res.write(file, "binary")
           res.end()
           return
@@ -131,6 +132,7 @@ class StaticServer {
 
     start() {
         http.createServer((req, res) => {
+            console.log(req.url);
             const pathName = path.join(this.root, path.normalize(req.url));
             this.routeHandler(pathName, req, res);
         }).listen(this.port, err => {
