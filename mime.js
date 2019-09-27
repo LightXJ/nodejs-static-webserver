@@ -6,7 +6,8 @@ const mimeTypes = {
     "html": "text/html",
     "ico": "image/x-icon",
     "jpeg": "image/jpeg",
-    "json": "application/json"
+    "json": "application/json",
+    'pdf': "application/pdf"
 };
 
 const lookup = (pathName) => {

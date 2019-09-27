@@ -9,7 +9,7 @@ const url  = require('url');
 
 // 定义Expires规则
 const Expires = {
-  fileMatch: /(gif|png|jpg|jpeg|js|css)$/ig,
+  fileMatch: /(gif|png|jpg|jpeg|js|css|pdf)$/ig,
   maxAge: 60
 };
 const hasTrailingSlash = url => url[url.length - 1] === '/';
@@ -23,6 +23,7 @@ class StaticServer {
 
     respondFile(pathName, req, res){
       const extname = path.extname(req.url);
+      console.log('pathName', pathName);
       fs.readFile(pathName, 'binary', (err, file)=>{
         if(err) {
           // 文件读取出错
@@ -57,7 +58,8 @@ class StaticServer {
               return;
           }
           res.setHeader("Etag", hash);
-
+          // 设置跨域
+          res.setHeader("Access-Control-Allow-Origin", "*");
           // 正常写文件
           res.writeHead(200, {"Content-Type": mime.lookup(pathName) });
           console.log('写文件'+req.url);
@@ -113,6 +115,7 @@ class StaticServer {
     }
 
     routeHandler(pathName, req, res){
+      console.log('pathName', pathName);
       fs.stat(pathName, (err, stat) => {
         if (!err) {
           const reqPath = url.parse(req.url).pathname;
@@ -132,8 +135,8 @@ class StaticServer {
 
     start() {
         http.createServer((req, res) => {
-            console.log(req.url);
-            const pathName = path.join(this.root, path.normalize(req.url));
+            const pathName = path.join(this.root, url.parse(path.normalize(req.url)).pathname);
+            console.log('pathName', pathName);
             this.routeHandler(pathName, req, res);
         }).listen(this.port, err => {
             if (err) {
